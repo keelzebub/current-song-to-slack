@@ -5,30 +5,28 @@ property webhookURL : "[Incoming WebHook URL]"
 property userName : short user name of (system info)
 property theName : ""
 
-on escape_quotes(string_to_escape)
-  set AppleScript's text item delimiters to the "\""
-  set the item_list to every text item of string_to_escape
-  set AppleScript's text item delimiters to the "\\\""
-  set string_to_escape to the item_list as string
+on replace_chars(this_text, search_string, replacement_string)
+  set AppleScript's text item delimiters to the search_string
+  set the item_list to every text item of this_text
+  set AppleScript's text item delimiters to the replacement_string
+  set this_text to the item_list as string
   set AppleScript's text item delimiters to ""
-  return string_to_escape
-end escape_quotes
+  return this_text
+end replace_chars
 
 on idle
 
   if application "Spotify" is running then
     tell application "Spotify"
       if player state is playing then
-        set currentTrack to current track's name
+        set currentTrack to my replace_chars(current track's name, "\"", "\\\"")
         if (theName is equal to currentTrack) then
           return 5
         else
-          set theTrack to current track
-          set theArtist to artist of theTrack
-          set theName to name of theTrack
+          set theArtist to my replace_chars(current track's artist, "\"", "\\\"")
+          set theName to currentTrack
           set trackString to theName & " - " & theArtist
-          do shell script "curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"" & channelName & "\\\", \\\"username\\\": \\\"" & userName & "\\\", \\\"text\\\": \\\"" & my escape_quotes(trackString) & "\\\", \\\"icon_emoji\\\": \\\":dragon_face:\\\"}\"" & webhookURL
-          return 5
+          do shell script "curl -X POST --data-urlencode 'payload={\"channel\": \"" & channelName & "\", \"username\": \"" & userName & "\", \"text\": \"" & my replace_chars(trackString, "'", "\\u0027") & "\", \"icon_emoji\": \":dragon_face:\"}' " & webhookURL
         end if
       end if
     end tell
@@ -37,16 +35,14 @@ on idle
 
     tell application "iTunes"
       if player state is playing then
-        set currentTrack to current track's name
+        set currentTrack to my replace_chars(current track's name, "\"", "\\\"")
         if (theName is equal to currentTrack) then
           return 5
         else
-          set theTrack to current track
-          set theArtist to artist of theTrack
-          set theName to name of theTrack
+          set theArtist to my replace_chars(current track's artist, "\"", "\\\"")
+          set theName to currentTrack
           set trackString to theName & " - " & theArtist
-          do shell script "curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"" & channelName & "\\\", \\\"username\\\": \\\"" & userName & "\\\", \\\"text\\\": \\\"" & my escape_quotes(trackString) & "\\\", \\\"icon_emoji\\\": \\\":dragon_face:\\\"}\"" & webhookURL
-          return 5
+          do shell script "curl -X POST --data-urlencode 'payload={\"channel\": \"" & channelName & "\", \"username\": \"" & userName & "\", \"text\": \"" & my replace_chars(trackString, "'", "\\u0027") & "\", \"icon_emoji\": \":dragon_face:\"}' " & webhookURL
         end if
       end if
     end tell
@@ -55,16 +51,14 @@ on idle
 
     tell application "Rdio"
       if player state is playing then
-        set currentTrack to current track's name
+        set currentTrack to my replace_chars(current track's name, "\"", "\\\"")
         if (theName is equal to currentTrack) then
           return 5
         else
-          set theTrack to current track
-          set theArtist to artist of theTrack
-          set theName to name of theTrack
+          set theArtist to my replace_chars(current track's artist, "\"", "\\\"")
+          set theName to currentTrack
           set trackString to theName & " - " & theArtist
-          do shell script "curl -X POST --data-urlencode \"payload={\\\"channel\\\": \\\"" & channelName & "\\\", \\\"username\\\": \\\"" & userName & "\\\", \\\"text\\\": \\\"" & my escape_quotes(trackString) & "\\\", \\\"icon_emoji\\\": \\\":dragon_face:\\\"}\"" & webhookURL
-          return 5
+          do shell script "curl -X POST --data-urlencode 'payload={\"channel\": \"" & channelName & "\", \"username\": \"" & userName & "\", \"text\": \"" & my replace_chars(trackString, "'", "\\u0027") & "\", \"icon_emoji\": \":dragon_face:\"}' " & webhookURL
         end if
       end if
     end tell
