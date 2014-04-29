@@ -6,6 +6,8 @@ must be enabled.
 
 ## TODO
 
-* Switch to cases for applications
+* Check if application exists on user's computer
+* If other applications open, won't post to Slack
 * Test if media is streaming over airplay
 * Make emoji a config variable
+* Check if slack is running before doing anything
