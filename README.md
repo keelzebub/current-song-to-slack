@@ -7,6 +7,4 @@ must be enabled.
 ## TODO
 
 * If other applications open, won't post to Slack
-* Test if media is streaming over airplay
-* Make emoji a config variable
-* Check if slack is running before doing anything
+* Test if media is streaming over airplay (can't do without opening iTunes)
