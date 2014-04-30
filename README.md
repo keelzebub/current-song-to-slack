@@ -6,7 +6,6 @@ must be enabled.
 
 ## TODO
 
-* Check if application exists on user's computer
 * If other applications open, won't post to Slack
 * Test if media is streaming over airplay
 * Make emoji a config variable
