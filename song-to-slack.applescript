@@ -1,7 +1,7 @@
 # config variables
 property channelName : "#[Slack Channel Name]"
 property webhookURL : "[Incoming WebHook URL]"
-property emojiName : "dragon_face"
+property emojiName : "musical_note"
 property possibleAppList : {"Spotify", "iTunes", "Rdio"}
 property installedAppList : {}
 property chosenApp : ""
