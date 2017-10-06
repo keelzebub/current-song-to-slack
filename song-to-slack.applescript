@@ -1,4 +1,4 @@
-# config variables - Properties are stored in the OS for the apps future runs
+# config variables - Properties are stored in the OS and are configurable
 property firstRun : 0
 property channelName : ""
 property webhookURL : ""
