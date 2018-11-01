@@ -1,4 +1,6 @@
-# config variables - Properties are stored in the OS and are configurable
+# This is an AppleScript. Create a new AS in Script Editor. Export as an 'Application' and be sure to check the box 'Stay Open After Run'
+
+# config variables - Properties are stored in the OS for the apps future runs
 property firstRun : 0
 property channelName : ""
 property webhookURL : ""
@@ -20,23 +22,23 @@ end replace_chars
 
 # Is this the first run of the application?
 if firstRun is equal to 0 then
-	set channelName to the text returned of (display dialog "What is the channel name?" default answer "#your_channel")
-	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer "https://hooks.slack.com/services/XXX/XXX/XXXX")
+	set channelName to the text returned of (display dialog "What is the channel name?" default answer "#yourchannel")
+	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer "https://hooks.slack.com/services/XXXX/XXXXX/XXXXXX")
 	set chosenEmoji to (choose from list emojiList with title "Emoji Selector" with prompt "Choose the emoji you prefer:")
-	set userName to the text returned of (display dialog "What is your Slack user name?" default answer "username")
+	set userName to the text returned of (display dialog "What is your Slack user name?" default answer "user.name")
 	set firstRun to 1
-	# Does the user want to adjust the settings?
 else
 	set changeSettingsQuestion to display dialog "Need to adjust settings?" buttons {"Yes", "No"} default button 2
 	set selectedAnswer to button returned of changeSettingsQuestion
 end if
 
 
+# Does the user want to adjust the settings?
 if selectedAnswer is equal to "Yes" then
-	set channelName to the text returned of (display dialog "What is the channel name?" default answer "#your_channel")
-	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer "https://hooks.slack.com/services/XXX/XXX/XXXX")
+	set channelName to the text returned of (display dialog "What is the channel name?" default answer channelName)
+	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer webhookURL)
 	set chosenEmoji to (choose from list emojiList with title "Emoji Selector" with prompt "Choose the emoji you prefer:")
-	set userName to the text returned of (display dialog "What is your Slack user name?" default answer "username")
+	set userName to the text returned of (display dialog "What is your Slack user name?" default answer userName)
 end if
 
 # Ensure the service will work
