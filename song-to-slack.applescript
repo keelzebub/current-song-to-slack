@@ -1,16 +1,15 @@
-# config variables
-property channelName : "#[Slack Channel Name]"
-property webhookURL : "[Incoming WebHook URL]"
+# This is an AppleScript. Create a new AS in Script Editor. Export as an 'Application' and be sure to check the box 'Stay Open After Run'
+
+# config variables - Properties are stored in the OS for the apps future runs
+property firstRun : 0
+property channelName : ""
+property webhookURL : ""
 property emojiName : "musical_note"
-property possibleAppList : {"Spotify", "iTunes", "Rdio"}
-property installedAppList : {}
-property chosenApp : ""
-
-set installedAppList to {}
-
-# globals
-property userName : do shell script "whoami"
+property emojiList : {"beers", "cd", "loudspeaker", "microphone", "musical_keyboard", "musical_note", "musical_score", "radio", "saxophone", "speaker"}
+property chosenEmoji : ""
+property userName : ""
 property theName : ""
+property selectedAnswer : ""
 
 on replace_chars(this_text, search_string, replacement_string)
 	set AppleScript's text item delimiters to the search_string
@@ -21,41 +20,50 @@ on replace_chars(this_text, search_string, replacement_string)
 	return this_text
 end replace_chars
 
+# Is this the first run of the application?
+if firstRun is equal to 0 then
+	set channelName to the text returned of (display dialog "What is the channel name?" default answer "#yourchannel")
+	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer "https://hooks.slack.com/services/XXXX/XXXXX/XXXXXX")
+	set chosenEmoji to (choose from list emojiList with title "Emoji Selector" with prompt "Choose the emoji you prefer:")
+	set userName to the text returned of (display dialog "What is your Slack user name?" default answer "user.name")
+	set firstRun to 1
+else
+	set changeSettingsQuestion to display dialog "Need to adjust settings?" buttons {"Yes", "No"} default button 2
+	set selectedAnswer to button returned of changeSettingsQuestion
+end if
 
-repeat with n from 1 to count of possibleAppList
-	tell application "Finder" to set appInstalled to exists application file ((path to applications folder as string) & item n of possibleAppList)
-	if appInstalled then
-		set installedAppList to installedAppList & item n of possibleAppList
-	end if
-end repeat
 
-set chosenApp to (choose from list installedAppList with title "Application Selection" with prompt "Choose an application:")
+# Does the user want to adjust the settings?
+if selectedAnswer is equal to "Yes" then
+	set channelName to the text returned of (display dialog "What is the channel name?" default answer channelName)
+	set webhookURL to the text returned of (display dialog "What is the webhook URL?" default answer webhookURL)
+	set chosenEmoji to (choose from list emojiList with title "Emoji Selector" with prompt "Choose the emoji you prefer:")
+	set userName to the text returned of (display dialog "What is your Slack user name?" default answer userName)
+end if
 
-if chosenApp is false then
+# Ensure the service will work
+if userName is equal to "" and webhookURL is equal to "" then
 	quit me
 end if
 
-# content
+# Check every 5 seconds if the song is different, if so update the Slack channel
 on idle
-
-	if application (chosenApp as string) is running then
-
-		using terms from application "iTunes"
-			tell application (chosenApp as string)
-				if player state is playing then
-					set currentTrack to my replace_chars(current track's name, "\"", "\\\"")
-					if (theName is equal to currentTrack) then
-						return 5
-					else
-						set theArtist to my replace_chars(current track's artist, "\"", "\\\"")
-						set theName to currentTrack
-						set trackString to theName & " - " & theArtist
-						do shell script "curl -X POST --data-urlencode 'payload={\"channel\": \"" & channelName & "\", \"username\": \"" & userName & "\", \"text\": \"" & my replace_chars(trackString, "'", "\\u0027") & "\", \"icon_emoji\": \":" & emojiName & ":\"}' " & webhookURL
-					end if
+	
+	using terms from application "iTunes"
+		tell application "iTunes" #(chosenApp as string)
+			if player state is playing then
+				set currentTrack to my replace_chars(current track's name, "\"", "\\\"")
+				if (theName is equal to currentTrack) then
+					return 5
+				else
+					set theArtist to my replace_chars(current track's artist, "\"", "\\\"")
+					set theName to currentTrack
+					set trackString to theName & " - " & theArtist
+					do shell script "curl -X POST --data-urlencode 'payload={\"channel\": \"" & channelName & "\", \"username\": \"" & userName & "\", \"text\": \"" & my replace_chars(trackString, "'", "\\u0027") & "\", \"icon_emoji\": \":" & chosenEmoji & ":\"}' " & webhookURL
 				end if
-			end tell
-		end using terms from
-	end if
-
+			end if
+		end tell
+	end using terms from
+	
 	return 5
 end idle
